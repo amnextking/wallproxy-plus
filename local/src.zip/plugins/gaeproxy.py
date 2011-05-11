@@ -166,7 +166,7 @@ class Handler:
         t = time.time()
         if self.__range_fetch(req, handler, request, start, end):
             t = time.time() - t
-            t = (end - start + 1) / 1000 / 1000 / t
+            t = (end - start + 1) / 1000.0 / 1000 / t
             print '>>>>>>>>>> Range Fetch ended (all @ %sM/s)' % t
         else:
             req.close_connection = 1
