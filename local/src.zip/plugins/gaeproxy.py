@@ -14,7 +14,7 @@ class Handler:
     crypto = _crypto.Crypto('XOR--32'); key = ''
     proxy = proxylib.Proxy()
     headers = httpheaders.HTTPHeaders('Content-Type: application/octet-stream')
-    range0 = 200000; range = 500000; max_threads = 10
+    range0 = 100000; range = 500000; max_threads = 10
 
     def __init__(self, config):
         dic = {'crypto': _crypto.Crypto, 'key': lambda v:v,

@@ -27,4 +27,4 @@
    siteKey密码（可以改） cryptoMode加密模式（可以改）
 
 7、默认加密模式XOR--32，默认密码空(也是加密的)，maxSize默认值9000000，
-   range0默认值200000，range默认值500000，max_threads默认值10
+   range0默认值100000，range默认值500000，max_threads默认值10

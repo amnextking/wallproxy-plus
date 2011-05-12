@@ -1,4 +1,4 @@
-import hashlib
+import hashlib, itertools
 
 __all__ = ['Crypto']
 
@@ -8,7 +8,6 @@ class XOR:
         self.key = key
 
     def encrypt(self, data):
-        import itertools
         xorsize = 1024
         key = itertools.cycle(map(ord, self.key))
         dr = xrange(0, len(data), xorsize)

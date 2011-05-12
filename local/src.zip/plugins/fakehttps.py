@@ -1,7 +1,7 @@
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
-import os
+import os, socket
 from wpconfig import main_dir as cert_dir
 cert_dir = os.path.join(cert_dir, 'cert')
 try:
@@ -146,8 +146,13 @@ class Handler:
         except ssl.SSLError, e:
             return req.log_error('"%s" SSLError:%s', req.requestline, e)
         addr = req.client_address[0],req.client_address[1],'https://'+req.path
-        try: req.__class__(ssl_sock, addr, req.server)
-        except: pass
+        try:
+            req.__class__(ssl_sock, addr, req.server)
+            ssl_sock.shutdown(socket.SHUT_WR)
+        except socket.error:
+            pass
+        finally:
+            ssl_sock.close()
 
 
 init_time = 0

@@ -12,7 +12,7 @@ import threading
 from util import urlinfo
 import wpconfig
 
-class ProxyServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+class ProxyServer(SocketServer.ThreadingTCPServer):
     allow_reuse_address = BaseHTTPServer.HTTPServer.allow_reuse_address
     daemon_threads = True
 

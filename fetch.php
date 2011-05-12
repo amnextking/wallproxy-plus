@@ -50,7 +50,7 @@ function xor_data($data, $key) {
 }
 
 class MainHandler {
-	protected $siteKey = '';
+	protected $siteKey = '\xcf\x83\xe15~\xef\xb8\xbd\xf1T(P\xd6m\x80\x07\xd6 \xe4\x05\x0bW\x15\xdc\x83\xf4\xa9!\xd3l\xe9\xce';
 	protected $fetchMax = 2;
 	protected $contentMax = 200000;
 	protected $code = 0;
