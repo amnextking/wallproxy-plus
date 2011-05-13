@@ -174,31 +174,31 @@ class Handler:
 
     def __range_fetch(self, req, handler, request, start, end):
         request['range'] = '' # disable server auto-range-fetch
-        size = xrange(start+self.range0, end+1, self.range)
-        tasks = [(0, start, start+self.range0-1)] + [None] * len(size)
-        for i,s in enumerate(size, 1):
-            e = s + self.range - 1
+        i, s, thread_size, tasks = 0, start, len(handler)*2, []
+        while s <= end:
+            e = s + (i < thread_size and self.range0 or self.range) - 1
             if e > end: e = end
-            tasks[i] = i, s, e
-        size = min(len(tasks), len(handler)*2, self.max_threads)
+            tasks.append((i, s, e))
+            i += 1; s = e + 1
+        task_size = len(tasks)
+        thread_size = min(task_size, thread_size, self.max_threads)
         print ('>>>>>>>>>> Range Fetch started: threads=%d blocks=%d '
-                'bytes=%d-%d' % (size, len(tasks), start, end))
-        if size == 1:
+                'bytes=%d-%d' % (thread_size, task_size, start, end))
+        if thread_size == 1:
             return self._single_fetch(req, handler, request, tasks)
         handler = list(handler); random.shuffle(handler)
-        if size > len(handler): handler += handler[:size-len(handler)]
-        results = [None] * len(tasks)
+        if thread_size > len(handler): handler *= 2
+        results = [None] * task_size
         mutex = threading.Lock()
         threads = {}
-        for i in xrange(size):
+        for i in xrange(thread_size):
             t = threading.Thread(target=handler[i]._range_thread,
                     args=(request, tasks, results, threads, mutex))
             threads[t] = set([])
             t.setDaemon(True)
-        size = len(tasks)
         for t in threads: t.start()
         i = 0; t = False
-        while i < size:
+        while i < task_size:
             if results[i] is not None:
                 try:
                     self.write_data(req, 1, results[i])
