@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
-__version__ = '0.0.5'
+__version__ = '1.0.5'
 
 import SocketServer
 import BaseHTTPServer

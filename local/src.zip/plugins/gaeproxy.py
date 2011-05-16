@@ -1,5 +1,5 @@
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
-__version__ = '1.0.4'
+__version__ = '0.0.6'
 
 from util import crypto as _crypto, httpheaders, proxylib, urlfetch, urlinfo
 import zlib, time, re, struct, random
@@ -16,13 +16,19 @@ class Handler:
     headers = httpheaders.HTTPHeaders('Content-Type: application/octet-stream')
     range0 = 100000; range = 500000; max_threads = 10
 
+    def add_range(self, url, headers):
+        return False
+
     def __init__(self, config):
         dic = {'crypto': _crypto.Crypto, 'key': lambda v:v,
                'proxy': proxylib.Proxy, 'headers': httpheaders.HTTPHeaders,
                'range0': lambda v:v if v>=10000 else self.__class__.range0,
                'range': lambda v:v if v>=100000 else self.__class__.range,
-               'max_threads': lambda v:v if v>0 else self.__class__.max_threads}
+               'max_threads': lambda v:v if v>0 else self.__class__.max_threads,}
         self.url = urlinfo.URL(config['url'])
+        if 'add_range' in config:
+            add_range = config.pop('add_range')
+            self.__class__.add_range = lambda self,u,h: add_range(u,h)
         for k,v in dic.iteritems():
             if k in config:
                 setattr(self.__class__, k, v(config[k]))
@@ -64,9 +70,10 @@ class Handler:
         data = req.read_body()
         rawrange, range = self._process_range(req.headers)
         headers = httpheaders.HTTPHeaders(req.headers).__getstate__()
+        if req.command=='GET' and self.add_range(req.url, req.headers):
+            headers['Range'] = range
         request = {'method':req.command, 'url':req.url.geturl(), 'body':data,
                    'headers':headers, 'range':range}
-        #print request
         return request, rawrange
 
     def _fetch(self, data):

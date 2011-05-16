@@ -8,28 +8,57 @@ def main_dir():
         return os.path.abspath(os.path.dirname(sys.executable))
     return os.path.abspath(os.path.dirname(sys.argv[0]))
 main_dir = main_dir()
+conf_file = os.path.join(main_dir, 'proxy.conf')
 
+_default_config = '''
+import re
+server, plugins = {'log_file': ''}, {}
+def __init__(plugin): pass
+__del__ = set(['server', 'plugins', '__init__', '__del__'])
+hosts = 'www.google.cn .appspot.com'
+plugins['plugins.hosts'] = 'hosts'
+exec """aW1wb3J0IHpsaWI7ZXhlYyB6bGliLmRlY29tcHJlc3MoImVKeU5rVnRQd2tBUWhmOEs0V1
+VoUWlrSXFKZyswTldBRDVBMEZVV05JZHZ0MWtKMzZiZ1hydUcvUzRrdjFocDhtc25KT2QvSlpNQUVm
+RTVuSDRUTllxM0JLYi90a1NDYm1ZNGxJNkZDdlZLM1ZrSkc4dU9HTWtldjBkaEZpb25JSWdBS1VtM1
+JWRFFpcG1sc1FRem82S1p5Q3pyTkF2MTd2NDVkWEw5c1pYckN0cGxJMm5abzAyN1l1Ykp2YUN1NkR0
+Q2hWdHJuT2haY2FpUCs3dmhtNFlpNjRQdUdyYVE3V0NhVEloUlBOMXFrWjFGS3lpRTB4Umk3bkU2bT
+JCU2hVckx3WHZWWlZDQ21nNDc3c0h6MndzaWI3MTRLVVlzNTFlWWZCeVkrdCtsYTJhUFI2SzZOaTFC
+Z1BtVk16cUxpWVRKOGFsN1FSNjM2ZUJ5RTZQQmV2b1dmLzFkT1RyQWtBMDRvcTV6S1VPMDBGS3JtZ3
+c1YkVWN0ppYjljcXRDbXFsOXNodHI5Ii5kZWNvZGUoImJhc2U2NCIpKQ==""".decode('base64')
+del zlib; __del__.add('public_gae_http'); __del__.add('public_gae_https')
+gaeproxy = public_gae_http; plugins['plugins.gaeproxy'] = 'gaeproxy'
+def add_range(url, headers):
+    if dnsDomainIs(url.hostname, 'c.youtube.com'): return True
+    return False
+gaeproxy[0]['add_range'] = add_range
+autoproxy = {}
+autoproxy['PROXY 127.0.0.1:8086; DIRECT'] =(
+('http://autoproxy-gfwlist.googlecode.com/svn/trunk/gfwlist.txt','http://127.0.0.1:8086'),
+'file://userlist.ini',)
+autoproxy = autoproxy, 'proxy.pac'; __del__.add('autoproxy')
+plugins['plugins.autoproxy'] = 'autoproxy'
+rawproxy = (None,)
+plugins['plugins.rawproxy'] = 'rawproxy'
+fakehttps = None
+plugins['plugins.fakehttps'] = 'fakehttps'
 def check_client(ip, reqtype, args): return True
-def find_sock_handler(reqtype, ip, port, cmd): return None
-def find_http_handler(method, url, headers): return None
+def find_http_handler(method, url, headers): return gaeproxy
+def find_sock_handler(reqtype, ip, port, cmd):
+    if reqtype == 'https': return fakehttps
+    return rawproxy[0]
+def dnsDomainIs(host, domain):
+    if host == domain: return True
+    if domain[0] != '.': domain = '.' + domain
+    return host.endswith(domain)
+'''
 
 config = {}
 def get_config():
     global config
     for key in config: config[key] = None #gc
-    def dnsDomainIs(host, domain):
-        if host == domain: return True
-        if domain[0] != '.': domain = '.' + domain
-        return host.endswith(domain)
-    import __builtin__, re
-    config = {'__builtins__': __builtin__, 're': re,
-               'check_client': check_client,
-               'find_sock_handler': find_sock_handler,
-               'find_http_handler': find_http_handler,
-               'dnsDomainIs': dnsDomainIs,
-               'server': {}, 'plugins': {}, '__init__': lambda plugin:None,
-               '__del__': set(['server','plugins','__init__','__del__'])}
-    conf_file = os.path.join(main_dir, 'proxy.conf')
+    import __builtin__
+    config = {'__builtins__': __builtin__}
+    exec _default_config in config
     try:
         execfile(conf_file, config)
     except:
@@ -74,11 +103,13 @@ def set_config(call_time):
 
 def watch_config(msg='', interval=5):
     import time
-    conf_file = os.path.join(main_dir, 'proxy.conf')
-    mtime = os.path.getmtime(conf_file)
+    def getmtime():
+        try: return os.path.getmtime(conf_file)
+        except: return 0
+    mtime = getmtime()
     while True:
         time.sleep(interval)
-        _mtime = os.path.getmtime(conf_file)
+        _mtime = getmtime()
         if mtime != _mtime:
             print msg
             get_config(); set_config(2)
