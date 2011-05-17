@@ -1,5 +1,5 @@
 <?php
-
+# Copyright (C) 2010-2011 | GNU GPLv3
 # __author__ = 'base64.decodestring("d3d3LmVodXN0QGdtYWlsLmNvbQ==")'
 # __version__ = '0.2.2'
 

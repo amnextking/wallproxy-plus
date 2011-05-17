@@ -1,4 +1,6 @@
+# Copyright (C) 2010-2011 | GNU GPLv3
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
+__patcher__ = 'ZHRtYWppYUAxNjMuY29t'.decode('base64')
 __version__ = '0.0.6'
 
 from util import crypto as _crypto, httpheaders, proxylib, urlfetch, urlinfo
@@ -15,9 +17,6 @@ class Handler:
     proxy = proxylib.Proxy()
     headers = httpheaders.HTTPHeaders('Content-Type: application/octet-stream')
     range0 = 100000; range = 500000; max_threads = 10
-
-    def add_range(self, url, headers):
-        return False
 
     def __init__(self, config):
         dic = {'crypto': _crypto.Crypto, 'key': lambda v:v,
@@ -95,8 +94,8 @@ class Handler:
         crypto = self.crypto.getcrypto(self.key)
         headers = httpheaders.HTTPHeaders()
         try:
-            #print resp.read()
-            zip, code, hlen = struct.unpack('>BHI', resp.read(7))
+            raw_data = resp.read(7)
+            zip, code, hlen = struct.unpack('>BHI', raw_data)
             if zip == 1:
                 data = self.crypto.unpaddata(crypto.decrypt(resp.read()))
                 data = zlib.decompress(data)
@@ -114,7 +113,8 @@ class Handler:
                 headers.__setstate__(self.load_data(self.crypto.unpaddata(h)))
                 return 0, code, headers, (resp, crypto)
             else:
-                raise ValueError('Data format not match(%s)'%self.url.geturl())
+                raw_data += resp.read()
+                raise ValueError('Data format not match(%s:%s)'%(self.url.geturl(), raw_data))
         except Exception, e:
             resp.close()
             return -1, str(e)
@@ -309,6 +309,12 @@ class Handler:
             res = self.fetch(data)
             if res[0]!=-1: break
             errors.append(res[1])
+            if res[1].find('10054')!=-1 and self.url.scheme!='https':
+                print 'Use https instead of http automatically.'
+                for h in handler:
+                    h.url.scheme = 'https'
+                    if h.url.port == 80: h.url.port = 443
+                    h.opener = urlfetch.HTTPSFetch(h.opener.proxy)
         else:
             return req.send_error(502, str(errors))
         if res[1]==206 and req.command=='GET':
@@ -325,6 +331,7 @@ init_time = 1
 plugin_name = 'Proxy based on GAE'
 
 def init(cls, config):
+    cls.add_range = lambda self,u,h: False
     import traceback
     server = [None] * len(config)
     for i,v in enumerate(config):

@@ -1,5 +1,7 @@
+# Copyright (C) 2010-2011 | GNU GPLv3
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
-__version__ = '0.0.2'
+__patcher__ = 'ZHRtYWppYUAxNjMuY29t'.decode('base64')
+__version__ = '0.0.3'
 
 from util import proxylib
 
@@ -13,16 +15,15 @@ init_time = 0
 plugin_name = 'local dns mapping'
 
 def init_plugin(hosts_):
-    import re
-    re_split = re.compile(r'\s+').split
     hosts = proxylib.hosts
-    old_items = set(hosts.items())
+    old_items = set(hosts[0].items()), set(hosts[1].items())
     for line in hosts_.splitlines():
         line = line.strip().lower()
         if not line or line.startswith('#'): continue
-        line = re_split(line, 1)
+        line = line.split()
         if len(line) != 2: continue
-        hosts[line[1]] = line[0]
-    new_items = set(hosts.items())
-    print ' updated %d dns mapping' % (len(new_items - old_items))
+        hosts[int(line[1].startswith('.'))][line[1]] = line[0]
+    new_items = set(hosts[0].items()), set(hosts[1].items())
+    c_items = new_items[0]-old_items[0], new_items[1]-old_items[1]
+    print ' updated %d,%d dns mapping' % (len(c_items[0]), len(c_items[1]))
     return Handler()

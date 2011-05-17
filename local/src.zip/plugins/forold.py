@@ -1,7 +1,8 @@
+# Copyright (C) 2010-2011 | GNU GPLv3
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
 __version__ = '0.4.1'
 
-from util import crypto as _crypto, proxylib, httpheaders
+from util import crypto as _crypto, httpheaders
 import gaeproxy
 import zlib, struct
 
@@ -47,6 +48,8 @@ class Handler(gaeproxy.Handler):
     def _process_request(self, req):
         data = req.read_body()
         rawrange, range = self._process_range(req.headers)
+        if req.command=='GET' and self.add_range(req.url, req.headers):
+            req.headers['Range'] = range
         request = {'url':req.url.geturl(), 'method':req.command,
                    'headers':req.headers, 'payload':data, 'range':range}
         return request, rawrange
@@ -55,14 +58,14 @@ class Handler(gaeproxy.Handler):
         data, resp = self._fetch(data)
         if data == -1: return data, resp
         try:
-            data = resp.read(); resp.close()
-            data = self.crypto.decrypt(data, self.key)
+            raw_data = resp.read(); resp.close()
+            data = self.crypto.decrypt(raw_data, self.key)
             if data[0] == '0':
                 data = data[1:]
             elif data[0] == '1':
                 data = zlib.decompress(data[1:])
             else:
-                return -1, 'Data format not match(%s)' % self.url.geturl()
+                return -1, 'Data format not match(%s:%s)' % (self.url.geturl(),raw_data)
             code, hlen, clen = struct.unpack('>3I', data[:12])
             if len(data) != 12+hlen+clen:
                 return -1, 'Data length not match'

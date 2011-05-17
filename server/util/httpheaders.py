@@ -1,3 +1,4 @@
+# Copyright (C) 2010-2011 | GNU GPLv3
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
 
 from UserDict import IterableUserDict

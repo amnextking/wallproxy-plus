@@ -1,3 +1,7 @@
+# Copyright (C) 2010-2011 | GNU GPLv3
+__author__ = '%s & %s' % ('d3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64'),
+             'YnJvbnplMW1hbkBnbWFpbC5jb20='.decode('base64'))
+
 import hashlib, itertools
 
 __all__ = ['Crypto']

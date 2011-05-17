@@ -1,4 +1,6 @@
+# Copyright (C) 2010-2011 | GNU GPLv3
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
+__patcher__ = 'ZHRtYWppYUAxNjMuY29t'.decode('base64')
 
 '''
 see http://en.wikipedia.org/wiki/SOCKS#Protocol
@@ -11,13 +13,13 @@ import urlinfo
 
 __all__ = ['ProxyError', 'Proxy']
 
-hosts = {}
+hosts = [{}, {}]
 def map_hosts(host):
-    newhost = hosts.get(host)
+    newhost = hosts[0].get(host)
     if newhost is None:
-        i = host.find('.')
-        if i != -1:
-            newhost = hosts.get(host[i:])
+        for k,v in hosts[1].iteritems():
+            if host.endswith(k):
+                newhost = v
     if newhost is not None:
         return newhost
     return host

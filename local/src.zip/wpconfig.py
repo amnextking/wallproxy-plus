@@ -1,4 +1,6 @@
+# Copyright (C) 2010-2011 | GNU GPLv3
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
+__patcher__ = 'ZHRtYWppYUAxNjMuY29t'.decode('base64')
 
 import os, traceback
 
@@ -17,16 +19,21 @@ def __init__(plugin): pass
 __del__ = set(['server', 'plugins', '__init__', '__del__'])
 hosts = 'www.google.cn .appspot.com'
 plugins['plugins.hosts'] = 'hosts'
-exec """aW1wb3J0IHpsaWI7ZXhlYyB6bGliLmRlY29tcHJlc3MoImVKeU5rVnRQd2tBUWhmOEs0V1
-VoUWlrSXFKZyswTldBRDVBMEZVV05JZHZ0MWtKMzZiZ1hydUcvUzRrdjFocDhtc25KT2QvSlpNQUVm
-RTVuSDRUTllxM0JLYi90a1NDYm1ZNGxJNkZDdlZLM1ZrSkc4dU9HTWtldjBkaEZpb25JSWdBS1VtM1
-JWRFFpcG1sc1FRem82S1p5Q3pyTkF2MTd2NDVkWEw5c1pYckN0cGxJMm5abzAyN1l1Ykp2YUN1NkR0
-Q2hWdHJuT2haY2FpUCs3dmhtNFlpNjRQdUdyYVE3V0NhVEloUlBOMXFrWjFGS3lpRTB4Umk3bkU2bT
-JCU2hVckx3WHZWWlZDQ21nNDc3c0h6MndzaWI3MTRLVVlzNTFlWWZCeVkrdCtsYTJhUFI2SzZOaTFC
-Z1BtVk16cUxpWVRKOGFsN1FSNjM2ZUJ5RTZQQmV2b1dmLzFkT1RyQWtBMDRvcTV6S1VPMDBGS3JtZ3
-c1YkVWN0ppYjljcXRDbXFsOXNodHI5Ii5kZWNvZGUoImJhc2U2NCIpKQ==""".decode('base64')
-del zlib; __del__.add('public_gae_http'); __del__.add('public_gae_https')
-gaeproxy = public_gae_http; plugins['plugins.gaeproxy'] = 'gaeproxy'
+def use_gae_https(gaeproxy):
+    httpsproxy = []
+    for s in gaeproxy:
+        if isinstance(s, basestring): s = {'url': s}
+        httpsproxy.append(s.copy())
+        httpsproxy[-1]['url'] = httpsproxy[-1]['url'].replace('http:', 'https:')
+    return httpsproxy
+exec """aW1wb3J0IHpsaWI7Z2FlcHJveHk9ZXZhbCh6bGliLmRlY29tcHJlc3MoJ2VKeU56MTlQd2
+pBVUJmQ3ZzcmMrQ050QTVoL2VXRFhNaDVFc0V3V05NVjI3cG13cnJlMnRBb2J2TGt0OE1pUHo5ZVRj
+MzhsOS9VYk9OR2pxSVFHZ3AwRnc0TGFVM0NkYVc2M0FwMG9HdkFRcWZDMDBHbmhJa3QwN0NGTVNaaz
+lYMFNtaFpxOUJ0Y1RzUGgvaUdBOHZ4MjJ6THZkdFNDWWhDK2tWaTY3RFd6cm1Od1U2RHJ5L3ExVmp3
+TW56cTc4VzVqVFdlZTdLVHhQUHQvV3lpMnJVRHFUcXBhd3hpUjdKQlk0YnVseGgxMFVwVW1VdjBFc1
+ZjaldQNG9mdGM4WjR0am1zTzZscVE4SDk0OEU2YjBMNlpjTTBUZThtdUl2UzdzTUkwa3VKcEU2ZVJo
+ZjBFZXdNTHdxR2ptOC9HVmVnakE9PScuZGVjb2RlKCdiYXNlNjQnKSkp""".decode('base64')
+del zlib; __del__.add('use_gae_https'); plugins['plugins.gaeproxy'] = 'gaeproxy'
 def add_range(url, headers):
     if dnsDomainIs(url.hostname, 'c.youtube.com'): return True
     return False
@@ -57,7 +64,10 @@ def get_config():
     global config
     for key in config: config[key] = None #gc
     import __builtin__
-    config = {'__builtins__': __builtin__}
+    config = {
+        '__builtins__': __builtin__, '__file__': conf_file,
+        '__name__': __name__+'.conf',
+    }
     exec _default_config in config
     try:
         execfile(conf_file, config)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-
+# Copyright (C) 2010-2011 | GNU GPLv3
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
+__patcher__ = 'ZHRtYWppYUAxNjMuY29t'.decode('base64')
 __version__ = '1.0.5'
 
 import SocketServer
