@@ -26,14 +26,12 @@ def use_gae_https(gaeproxy):
         httpsproxy.append(s.copy())
         httpsproxy[-1]['url'] = httpsproxy[-1]['url'].replace('http:', 'https:')
     return httpsproxy
-exec """aW1wb3J0IHpsaWI7Z2FlcHJveHk9ZXZhbCh6bGliLmRlY29tcHJlc3MoJ2VKeU56MTlQd2
-pBVUJmQ3ZzcmMrQ050QTVoL2VXRFhNaDVFc0V3V05NVjI3cG13cnJlMnRBb2J2TGt0OE1pUHo5ZVRj
-MzhsOS9VYk9OR2pxSVFHZ3AwRnc0TGFVM0NkYVc2M0FwMG9HdkFRcWZDMDBHbmhJa3QwN0NGTVNaaz
-lYMFNtaFpxOUJ0Y1RzUGgvaUdBOHZ4MjJ6THZkdFNDWWhDK2tWaTY3RFd6cm1Od1U2RHJ5L3ExVmp3
-TW56cTc4VzVqVFdlZTdLVHhQUHQvV3lpMnJVRHFUcXBhd3hpUjdKQlk0YnVseGgxMFVwVW1VdjBFc1
-ZjaldQNG9mdGM4WjR0am1zTzZscVE4SDk0OEU2YjBMNlpjTTBUZThtdUl2UzdzTUkwa3VKcEU2ZVJo
-ZjBFZXdNTHdxR2ptOC9HVmVnakE9PScuZGVjb2RlKCdiYXNlNjQnKSkp""".decode('base64')
-del zlib; __del__.add('use_gae_https'); plugins['plugins.gaeproxy'] = 'gaeproxy'
+exec """eJyFz0tPg0AUBeCfMwtboLX4IHFRRlNc0IRgtdUYMwwzToHpXOehUNP/Lutiwvaek+/kfh
+IGWrXd3dsvcrpBERLWQuT7R26Y5B4BMKCsR5X0ObNUeCAATVDNur5LFkEZ0KsyvA5u6ZzfFH1CdQdW
+9eHyIZ/iGE8v5/1VkvbDCs1IaVAUniZna1WjrZMja5jTGPLcsW8drw71Bg2YRrVWqhHGaJ3ATK5x3N
+DNFrsho0iVvdoRppDbVRg/Hl6ykmf74+4fptpT60afqvMmoD8mSNP0foGHDLgvLcgII5I6eZ5d0Cdr
+lnhdlOj0/gdfH6DY""".decode('base64').decode('zlib')
+__del__.add('use_gae_https'); plugins['plugins.gaeproxy'] = 'gaeproxy'
 def add_range(url, headers):
     if dnsDomainIs(url.hostname, 'c.youtube.com'): return True
     return False

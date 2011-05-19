@@ -9,13 +9,9 @@ class MainHandler(fetch.MainHandler):
 
     _unquote_map = {'0':'\x10', '1':'=', '2':'&'}
     def _quote(self, s):
-        return (str(s).replace('\x10', '\x100').
-                replace('=','\x101').replace('&','\x102'))
+        return (str(s).replace('\x10', '\x100').replace('=','\x101').replace('&','\x102'))
     def dump_data(self, dic):
-        res = []
-        for k,v in dic.iteritems():
-            res.append('%s=%s' % (self._quote(k), self._quote(v)))
-        return '&'.join(res)
+        return '&'.join('%s=%s' % (self._quote(k), self._quote(v)) for k,v in dic.iteritems())
     def _unquote(self, s):
         res = s.split('\x10')
         for i in xrange(1, len(res)):

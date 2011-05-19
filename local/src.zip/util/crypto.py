@@ -23,6 +23,12 @@ class XOR:
     decrypt = encrypt
 
 
+class NUL:
+    def encrypt(self, data):
+        return data
+    decrypt = encrypt
+
+
 class Crypto:
 
     _BlockSize = {'AES':16, 'ARC2':8, 'ARC4':1, 'Blowfish':8, 'CAST':8,
@@ -80,9 +86,6 @@ class Crypto:
 
     def getcrypto(self, key):
         if self.keysize==0 and key=='':
-            class NUL:
-                def encrypt(self, data): return data
-                decrypt = encrypt
             return NUL()
         khash = hashlib.sha512(key).digest()
         if self.keysize != 0:

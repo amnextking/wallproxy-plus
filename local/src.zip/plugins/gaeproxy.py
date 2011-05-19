@@ -84,7 +84,7 @@ class Handler:
         except Exception, e:
             return -1, str(e)
         if resp.status != 200:
-            resp.close()
+            resp.read(); resp.close()
             return -1, '%s: %s' % (resp.status, resp.reason)
         return 0, resp
 

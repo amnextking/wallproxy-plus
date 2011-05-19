@@ -11,11 +11,11 @@ from google.appengine.runtime import apiproxy_errors
 urlfetch._CaselessDict = httpheaders.HTTPHeaders
 
 class WPConfig(db.Model):
-    cfgCacheTime = db.IntegerProperty(required=True)
-    cacheTime = db.IntegerProperty(required=True)
-    maxSize = db.IntegerProperty(required=True)
-    siteKey = db.StringProperty()
-    cryptoMode = db.StringProperty()
+    cfgCacheTime = db.IntegerProperty(required=True, default=5*60)
+    cacheTime = db.IntegerProperty(required=True, default=24*3600)
+    maxSize = db.IntegerProperty(required=True, default=9000000)
+    siteKey = db.StringProperty(required=True, default=u'')
+    cryptoMode = db.StringProperty(required=True, default=u'XOR--32')
     version = db.StringProperty()
 
 def getConfig():
@@ -25,8 +25,7 @@ def getConfig():
         if cfg and cfg.version < __version__:
             cfg.delete(); cfg = None
         if not cfg:#No Entry
-            cfg = WPConfig(cfgCacheTime=5*60, cacheTime=24*3600, maxSize=9000000,
-                    siteKey=u'', cryptoMode=u'XOR--32', version=__version__)
+            cfg = WPConfig(version=__version__)
             cfg.put()
         config = {'cacheTime':cfg.cacheTime, 'maxSize':cfg.maxSize,
                   'siteKey':cfg.siteKey.encode('utf-8').decode('string_escape'),

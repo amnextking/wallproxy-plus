@@ -13,13 +13,14 @@ import urlinfo
 
 __all__ = ['ProxyError', 'Proxy']
 
-hosts = [{}, {}]
+hosts = [{}, []]
 def map_hosts(host):
     newhost = hosts[0].get(host)
     if newhost is None:
-        for k,v in hosts[1].iteritems():
+        for k,v in hosts[1]:
             if host.endswith(k):
                 newhost = v
+                break
     if newhost is not None:
         return newhost
     return host

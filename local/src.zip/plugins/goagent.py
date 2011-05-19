@@ -2,11 +2,10 @@
 __author__ = 'ZHRtYWppYUAxNjMuY29t'.decode('base64')
 __version__ = '0.0.1'
 
-from util import crypto as _crypto
 import forold
 
 class Handler(forold.Handler):
-    crypto = _crypto.Crypto('XOR--0'); key = ''
+    crypto = forold._crypto.Crypto('XOR--0'); key = ''
 
     def dump_data(self, dic):
         return '&'.join('%s=%s' % (k, str(v).encode('hex')) for k, v in dic.iteritems())
