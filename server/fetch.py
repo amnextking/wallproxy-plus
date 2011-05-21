@@ -14,8 +14,8 @@ class WPConfig(db.Model):
     cfgCacheTime = db.IntegerProperty(required=True, default=5*60)
     cacheTime = db.IntegerProperty(required=True, default=24*3600)
     maxSize = db.IntegerProperty(required=True, default=9000000)
-    siteKey = db.StringProperty(required=True, default=u'')
-    cryptoMode = db.StringProperty(required=True, default=u'XOR--32')
+    siteKey = db.StringProperty(default=u'')
+    cryptoMode = db.StringProperty(default=u'XOR--32')
     version = db.StringProperty()
 
 def getConfig():
@@ -24,6 +24,7 @@ def getConfig():
         cfg = WPConfig.all().get()
         if cfg and cfg.version < __version__:
             cfg.delete(); cfg = None
+            memcache.flush_all()
         if not cfg:#No Entry
             cfg = WPConfig(version=__version__)
             cfg.put()

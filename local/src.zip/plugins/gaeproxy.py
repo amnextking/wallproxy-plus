@@ -315,6 +315,14 @@ class Handler:
                     h.url.scheme = 'https'
                     if h.url.port == 80: h.url.port = 443
                     h.opener = urlfetch.HTTPSFetch(h.opener.proxy)
+                hosts = proxylib.hosts[1]
+                try:
+                    i = hosts.index(('.appspot.com', 'www.google.cn'))
+                except ValueError:
+                    pass
+                else:
+                    hosts[i] = ('.appspot.com', 'www.google.com.hk')
+                #print handler[0], proxylib.map_hosts('.appspot.com')
         else:
             return req.send_error(502, str(errors))
         if res[1]==206 and req.command=='GET':

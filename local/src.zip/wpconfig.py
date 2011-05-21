@@ -47,7 +47,10 @@ plugins['plugins.rawproxy'] = 'rawproxy'
 fakehttps = None
 plugins['plugins.fakehttps'] = 'fakehttps'
 def check_client(ip, reqtype, args): return True
-def find_http_handler(method, url, headers): return gaeproxy
+def find_http_handler(method, url, headers):
+    if hosts(url.hostname): return rawproxy[0]
+    if method not in ('GET', 'HEAD', 'PUT', 'POST', 'DELETE'): return rawproxy[0]
+    return gaeproxy
 def find_sock_handler(reqtype, ip, port, cmd):
     if reqtype == 'https': return fakehttps
     return rawproxy[0]
