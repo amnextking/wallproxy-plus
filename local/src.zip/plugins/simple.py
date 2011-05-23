@@ -7,13 +7,14 @@ import gaeproxy
 class Handler(gaeproxy.Handler):
     def dump_data(self, dic):
         if 'headers' in dic:
+            dic = dict(dic)
             dic['headers'] = '&'.join('%s=%s' % (k,str(v).encode('hex')) for k,v in dic['headers'].iteritems())
         return '&'.join('%s=%s' % (k,str(v).encode('hex')) for k,v in dic.iteritems())
 
     def load_data(self, qs):
         dic = dict((k,v.decode('hex')) for k,v in (x.split('=') for x in qs.split('&')))
         if 'headers' in dic:
-            dic['headers'] = dict((k,v.decode('hex')) for k,v in (x.split('=') for x in qs.split('&')))
+            dic['headers'] = dict((k,v.decode('hex')) for k,v in (x.split('=') for x in dic['headers'].split('&')))
         return dic
 
 
