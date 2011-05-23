@@ -47,6 +47,7 @@ class MainHandler(webapp.RequestHandler):
     _crange_re = re.compile(r'bytes\s+(\d+)-(\d+)/(\d+)')
     _try_times = 2
     _deadline = (5, 10)
+    _cachename = 'wp_cache'
 
     def dump_data(self, data):
         return pickle.dumps(data, 1)
@@ -102,8 +103,8 @@ class MainHandler(webapp.RequestHandler):
         length = len(data[0])+len(data[1])+len(data[2])
         if need_cache and length<1000000:
             try:
-                if not memcache.set(url, data, self._cfg['cacheTime'], namespace='wp_cache'):
-                    logging.warning('Memcache set wp_cache(%s) failed' % url)
+                if not memcache.set(url, data, self._cfg['cacheTime'], namespace=self._cachename):
+                    logging.warning('Memcache set %s(%s) failed' % (self._cachename, url))
             except: pass
         if code == 555:
             logging.warning('Response: "%s %s" %s' % (method, url, content))
@@ -144,7 +145,7 @@ class MainHandler(webapp.RequestHandler):
     def _check_cache(self, method, url, headers):
         data = None
         if self._cfg['cacheTime'] and method=='GET':
-            data = memcache.get(url, namespace='wp_cache')
+            data = memcache.get(url, namespace=self._cachename)
         if data is not None:
             if 'If-Modified-Since' in headers:
                 headers = httpheaders.HTTPHeaders()

@@ -11,7 +11,7 @@ class Handler(gaeproxy.Handler):
 
     _unquote_map = {'0':'\x10', '1':'=', '2':'&'}
     def _quote(self, s):
-        return (str(s).replace('\x10', '\x100').replace('=','\x101').replace('&','\x102'))
+        return str(s).replace('\x10', '\x100').replace('=','\x101').replace('&','\x102')
     def dump_data(self, dic):
         return '&'.join('%s=%s' % (self._quote(k), self._quote(v)) for k,v in dic.iteritems())
     def _unquote(self, s):

@@ -4,11 +4,14 @@ runtime: python
 api_version: 1
 
 handlers:
-- url: /fetch\.php
-  script: fetch.py
+- url: /(?:fetch|gaeproxy)\.(?:php|py)
+  script: gaeproxy.py
 
-- url: /fetch0\.php
-  script: fetch0.py
+- url: /(?:fetch0|forold)\.(?:php|py)
+  script: forold.py
 
-- url: /fetch1\.php
-  script: fetch1.py
+- url: /(?:fetch1|goagent)\.(?:php|py)
+  script: goagent.py
+
+- url: /(?:fetch2|simple)\.(?:php|py)
+  script: simple.py

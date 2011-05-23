@@ -1,15 +1,15 @@
 __author__ = 'd3d3LmVodXN0QGdtYWlsLmNvbQ=='.decode('base64')
 __version__ = '0.4.2'
 
-import fetch
-from fetch import struct, zlib, logging, memcache
+import gaeproxy
+from gaeproxy import struct, zlib, logging, memcache
 
-class MainHandler(fetch.MainHandler):
-    _cfg = fetch._init_config(fetch.crypto.Crypto2)
+class MainHandler(gaeproxy.MainHandler):
+    _cfg = gaeproxy._init_config(gaeproxy.crypto.Crypto2)
 
     _unquote_map = {'0':'\x10', '1':'=', '2':'&'}
     def _quote(self, s):
-        return (str(s).replace('\x10', '\x100').replace('=','\x101').replace('&','\x102'))
+        return str(s).replace('\x10', '\x100').replace('=','\x101').replace('&','\x102')
     def dump_data(self, dic):
         return '&'.join('%s=%s' % (self._quote(k), self._quote(v)) for k,v in dic.iteritems())
     def _unquote(self, s):
@@ -81,8 +81,8 @@ class MainHandler(fetch.MainHandler):
         return False
 
 def main():
-    application = fetch.webapp.WSGIApplication([(r'/.*', MainHandler)], debug=True)
-    fetch.run_wsgi_app(application)
+    application = gaeproxy.webapp.WSGIApplication([(r'/.*', MainHandler)], debug=True)
+    gaeproxy.run_wsgi_app(application)
 
 if __name__ == '__main__':
     main()

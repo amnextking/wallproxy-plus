@@ -80,7 +80,7 @@ class Handler:
         try:
             resp = self.opener.open(self.url, data, 'POST', self.headers)
         except proxylib.ProxyError, e:
-            return -1, 'Connect porxy/host failed'
+            return -1, 'Connect proxy/host failed'
         except Exception, e:
             return -1, str(e)
         if resp.status != 200:
