@@ -1,7 +1,7 @@
 <?php
 # Copyright (C) 2010-2011 | GNU GPLv3
 # __author__ = 'base64.decodestring("d3d3LmVodXN0QGdtYWlsLmNvbQ==")'
-# __version__ = '0.2.2'
+# __version__ = '0.2.3'
 
 function _unquote_data($s) {
 	$unquote_map = array("\x102"=>'&', "\x101"=>'=', "\x100"=>"\x10");
@@ -50,7 +50,7 @@ function xor_data($data, $key) {
 }
 
 class MainHandler {
-	protected $siteKey = '\xcf\x83\xe15~\xef\xb8\xbd\xf1T(P\xd6m\x80\x07\xd6 \xe4\x05\x0bW\x15\xdc\x83\xf4\xa9!\xd3l\xe9\xce';
+	protected $siteKey = "\xcf\x83\xe15~\xef\xb8\xbd\xf1T(P\xd6m\x80\x07\xd6 \xe4\x05\x0bW\x15\xdc\x83\xf4\xa9!\xd3l\xe9\xce";
 	protected $fetchMax = 2;
 	protected $contentMax = 200000;
 	protected $code = 0;
@@ -86,12 +86,11 @@ class MainHandler {
 	function readHeader($ch, $header) {
 		$kv = array_map('trim', explode(':', $header, 2));
 		if (count($kv) == 2) {
-			$kv[0] = strtolower($kv[0]);
-			if ($kv[0]=='content-length' && $kv[1]>$this->contentMax) {
+			$key = str_replace(' ', '-', ucwords(str_replace('-', ' ', strtolower($kv[0]))));
+			if ($key=='Content-Length' && $kv[1]>$this->contentMax) {
 				$this->code = -1;
 				return -1;
 			}
-			$key = ucwords($kv[0]);
 			if (!array_key_exists($key, $this->headers))
 				$this->headers[$key] = $kv[1];
 			else
@@ -104,9 +103,9 @@ class MainHandler {
 		$request = xor_data(file_get_contents('php://input'), $this->siteKey);
 		$request = @gzuncompress($request);
 		if ($request === False) {
-            echo 'Hello World!';
-            return;
-        }
+			echo 'Hello World!';
+			return;
+		}
 		$request = decode_data($request);
 
 		$url_parts = parse_url($request['url']);
@@ -158,7 +157,7 @@ class MainHandler {
 					curl_close($ch);
 					return $this->sendNotify(555, 'Urlfetch error: Response is larger than '.$this->contentMax.' bytes');
 				}
-				if ($request['range']) $curl_opt[CURLOPT_HTTPHEADER]['range'] = $request['range'];
+				if ($request['range']) $curl_opt[CURLOPT_HTTPHEADER]['range'] = 'Range: '.$request['range'];
 				curl_setopt($ch, CURLOPT_HTTPHEADER, $curl_opt[CURLOPT_HTTPHEADER]);
 				$this->code = 0;
 				continue;
