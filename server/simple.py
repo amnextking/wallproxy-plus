@@ -11,7 +11,7 @@ class MainHandler(gaeproxy.MainHandler):
         return '&'.join('%s=%s' % (k,str(v).encode('hex')) for k,v in dic.iteritems())
 
     def load_data(self, qs):
-        return dict((k,v.decode('hex')) for k,v in (x.split('=') for x in qs.split('&')))
+        return dict((k,v.decode('hex')) for k,v in (x.split('=') for x in qs.split('&'))) if qs else {}
 
 
 def main():

@@ -25,9 +25,6 @@ class Handler:
                'range': lambda v:v if v>=100000 else self.__class__.range,
                'max_threads': lambda v:v if v>0 else self.__class__.max_threads,}
         self.url = urlinfo.URL(config['url'])
-        if 'add_range' in config:
-            add_range = config.pop('add_range')
-            self.__class__.add_range = lambda self,u,h: add_range(u,h)
         for k,v in dic.iteritems():
             if k in config:
                 setattr(self.__class__, k, v(config[k]))
@@ -339,8 +336,9 @@ init_time = 1
 plugin_name = 'Proxy based on GAE'
 
 def init(cls, config):
-    cls.add_range = lambda self,u,h: False
-    import traceback
+    import traceback, wpconfig
+    add_range = wpconfig.config['add_range']
+    Handler.add_range = lambda self,u,h: add_range(u,h)
     server = [None] * len(config)
     for i,v in enumerate(config):
         if isinstance(v, basestring):

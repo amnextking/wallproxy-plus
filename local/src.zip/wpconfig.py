@@ -32,10 +32,10 @@ IGWrXd3dsvcrpBERLWQuT7R26Y5B4BMKCsR5X0ObNUeCAATVDNur5LFkEZ0KsyvA5u6ZzfFH1CdQdW
 DNFrsho0iVvdoRppDbVRg/Hl6ykmf74+4fptpT60afqvMmoD8mSNP0foGHDLgvLcgII5I6eZ5d0Cdr
 lnhdlOj0/gdfH6DY""".decode('base64').decode('zlib')
 __del__.add('use_gae_https'); plugins['plugins.gaeproxy'] = 'gaeproxy'
+server_type = 'gaeproxy'; __del__.add('server_type')
 def add_range(url, headers):
     if dnsDomainIs(url.hostname, 'c.youtube.com'): return True
     return False
-gaeproxy[0]['add_range'] = add_range
 autoproxy = {}
 autoproxy['PROXY 127.0.0.1:8086; DIRECT'] =(
 ('http://autoproxy-gfwlist.googlecode.com/svn/trunk/gfwlist.txt','http://127.0.0.1:8086'),
@@ -48,8 +48,7 @@ fakehttps = None
 plugins['plugins.fakehttps'] = 'fakehttps'
 def check_client(ip, reqtype, args): return True
 def find_http_handler(method, url, headers):
-    if hosts(url.hostname): return rawproxy[0]
-    if method not in ('GET', 'HEAD', 'PUT', 'POST', 'DELETE'): return rawproxy[0]
+    if method not in ('GET', 'POST', 'HEAD', 'PUT', 'DELETE'): return rawproxy[0]
     return gaeproxy
 def find_sock_handler(reqtype, ip, port, cmd):
     if reqtype == 'https': return fakehttps
